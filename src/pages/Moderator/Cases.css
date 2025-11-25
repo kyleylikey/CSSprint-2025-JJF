@@ -1,0 +1,248 @@
+.manage-cases {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-content h1 {
+  color: #1a365d;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-content p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+.btn-new-case {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-new-case:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+}
+
+.cases-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.case-stat {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c5282;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.cases-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.case-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.case-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.case-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.case-id {
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: #718096;
+}
+
+.case-priority {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+}
+
+.case-priority.low { background: #48bb78; }
+.case-priority.medium { background: #ecc94b; color: #744210; }
+.case-priority.high { background: #ed8936; }
+.case-priority.critical { background: #f56565; }
+
+.case-title {
+  font-size: 1.2rem;
+  color: #1a365d;
+  margin: 0 0 1rem 0;
+}
+
+.case-status {
+  margin-bottom: 1rem;
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-indicator.active {
+  background: #bee3f8;
+  color: #2b6cb0;
+}
+
+.status-indicator.under_investigation {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-indicator.pending_action {
+  background: #fed7e2;
+  color: #97266d;
+}
+
+.status-indicator.closed {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.meta-icon {
+  font-size: 1rem;
+}
+
+.case-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-case {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-case.view {
+  background: #3182ce;
+  color: white;
+}
+
+.btn-case.view:hover {
+  background: #2c5282;
+}
+
+.btn-case.edit {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+.btn-case.edit:hover {
+  background: #e2e8f0;
+}
+
+.btn-case.close {
+  background: #48bb78;
+  color: white;
+}
+
+.btn-case.close:hover {
+  background: #38a169;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .manage-cases {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .btn-new-case {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cases-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .case-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .case-actions {
+    flex-direction: column;
+  }
+
+  .btn-case {
+    width: 100%;
+    text-align: center;
+  }
+}
