@@ -18,19 +18,17 @@ export default function SubmitReport() {
   const [referenceNumber, setReferenceNumber] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const target = e.target as HTMLInputElement;
-    const { name, value, type } = target;
-    const checked = type === 'checkbox' ? target.checked : undefined;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send to an API
-    console.log('Report submitted:', formData);
     // Generate reference number when submitted
     setReferenceNumber(`#REP-${Math.floor(Math.random() * 900000 + 100000)}`);
     setSubmitted(true);

@@ -50,8 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (email: string, password: string): boolean => {
     const mockUser = mockUsers[email];
     if (mockUser && mockUser.password === password) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _pass, ...userWithoutPassword } = mockUser;
+      const { password: _, ...userWithoutPassword } = mockUser;
       setUser(userWithoutPassword);
       return true;
     }
