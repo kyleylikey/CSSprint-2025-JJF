@@ -1,0 +1,265 @@
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
+
+export type ReportStatus = 'new' | 'reviewing' | 'pending' | 'escalated' | 'resolved' | 'dismissed';
+export type ReportSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type ReportCategory = 
+  | 'harassment'
+  | 'discrimination'
+  | 'fraud'
+  | 'corruption'
+  | 'safety'
+  | 'conflict'
+  | 'data'
+  | 'other';
+
+export interface Report {
+  id: string;
+  title: string;
+  description: string;
+  category: ReportCategory;
+  severity: ReportSeverity;
+  status: ReportStatus;
+  submittedBy: string;
+  submitterId: string;
+  date: string;
+  incidentDate?: string;
+  anonymous: boolean;
+  involvedParties?: string;
+  evidence?: string;
+  assignedTo?: string;
+  notes: ReportNote[];
+}
+
+export interface ReportNote {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: string;
+}
+
+interface ReportContextType {
+  reports: Report[];
+  addReport: (report: Omit<Report, 'id' | 'status' | 'notes'>) => string;
+  updateReportStatus: (reportId: string, status: ReportStatus) => void;
+  assignReport: (reportId: string, moderatorId: string) => void;
+  addNote: (reportId: string, note: Omit<ReportNote, 'id' | 'timestamp'>) => void;
+  getReportsBySubmitter: (submitterId: string, userName?: string) => Report[];
+  getReportsByStatus: (status: ReportStatus) => Report[];
+  getStatistics: () => ReportStatistics;
+}
+
+export interface ReportStatistics {
+  total: number;
+  newReports: number;
+  inProgress: number;
+  resolved: number;
+  critical: number;
+  thisMonth: number;
+  resolutionRate: number;
+}
+
+const ReportContext = createContext<ReportContextType | undefined>(undefined);
+
+// Initial mock data for demonstration
+const initialReports: Report[] = [
+  {
+    id: 'REP-100001',
+    title: 'Financial discrepancy in Q3 expense reports',
+    description: 'I noticed significant discrepancies in the Q3 expense reports for the marketing department. Several entries appear to be duplicated or inflated beyond reasonable business expenses.',
+    category: 'fraud',
+    severity: 'critical',
+    status: 'new',
+    submittedBy: 'Anonymous',
+    submitterId: 'anon-1',
+    date: new Date().toISOString().split('T')[0],
+    anonymous: true,
+    involvedParties: 'Marketing Department Leadership',
+    notes: [],
+  },
+  {
+    id: 'REP-100002',
+    title: 'Inappropriate workplace behavior report',
+    description: 'A colleague has been making inappropriate comments during team meetings. This has been happening for several weeks and is making team members uncomfortable.',
+    category: 'harassment',
+    severity: 'high',
+    status: 'reviewing',
+    submittedBy: 'John Smith',
+    submitterId: '1',
+    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+    anonymous: false,
+    notes: [
+      {
+        id: 'NOTE-1',
+        author: 'Jane Moderator',
+        content: 'Initial review started. Scheduling interviews with team members.',
+        timestamp: new Date(Date.now() - 43200000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'REP-100003',
+    title: 'Potential conflict of interest in vendor selection',
+    description: 'The procurement manager appears to have a personal relationship with one of our key vendors. This vendor consistently wins contracts despite not having the most competitive bids.',
+    category: 'conflict',
+    severity: 'medium',
+    status: 'pending',
+    submittedBy: 'Anonymous',
+    submitterId: 'anon-2',
+    date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
+    anonymous: true,
+    notes: [],
+  },
+  {
+    id: 'REP-100004',
+    title: 'Data privacy concerns with customer information',
+    description: 'Customer data is being stored on personal devices by sales team members. This violates our data protection policies and could lead to a security breach.',
+    category: 'data',
+    severity: 'high',
+    status: 'escalated',
+    submittedBy: 'Sarah Johnson',
+    submitterId: '4',
+    date: new Date(Date.now() - 259200000).toISOString().split('T')[0],
+    anonymous: false,
+    involvedParties: 'Sales Department',
+    notes: [
+      {
+        id: 'NOTE-2',
+        author: 'Jane Moderator',
+        content: 'Escalated to IT Security team for immediate review.',
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'REP-100005',
+    title: 'Discrimination in promotion decisions',
+    description: 'I have observed a pattern of discrimination in promotion decisions within my department. Qualified candidates are being overlooked based on factors unrelated to their job performance.',
+    category: 'discrimination',
+    severity: 'medium',
+    status: 'resolved',
+    submittedBy: 'Anonymous',
+    submitterId: 'anon-3',
+    date: new Date(Date.now() - 604800000).toISOString().split('T')[0],
+    anonymous: true,
+    notes: [
+      {
+        id: 'NOTE-3',
+        author: 'Jane Moderator',
+        content: 'Investigation completed. HR has implemented new promotion guidelines.',
+        timestamp: new Date(Date.now() - 172800000).toISOString(),
+      },
+    ],
+  },
+];
+
+export function ReportProvider({ children }: { children: ReactNode }) {
+  const [reports, setReports] = useState<Report[]>(initialReports);
+
+  const addReport = (reportData: Omit<Report, 'id' | 'status' | 'notes'>): string => {
+    const id = `REP-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newReport: Report = {
+      ...reportData,
+      id,
+      status: 'new',
+      notes: [],
+    };
+    setReports(prev => [newReport, ...prev]);
+    return id;
+  };
+
+  const updateReportStatus = (reportId: string, status: ReportStatus) => {
+    setReports(prev =>
+      prev.map(report =>
+        report.id === reportId ? { ...report, status } : report
+      )
+    );
+  };
+
+  const assignReport = (reportId: string, moderatorId: string) => {
+    setReports(prev =>
+      prev.map(report =>
+        report.id === reportId
+          ? { ...report, assignedTo: moderatorId, status: 'reviewing' }
+          : report
+      )
+    );
+  };
+
+  const addNote = (reportId: string, note: Omit<ReportNote, 'id' | 'timestamp'>) => {
+    const newNote: ReportNote = {
+      ...note,
+      id: `NOTE-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+    };
+    setReports(prev =>
+      prev.map(report =>
+        report.id === reportId
+          ? { ...report, notes: [...report.notes, newNote] }
+          : report
+      )
+    );
+  };
+
+  const getReportsBySubmitter = (submitterId: string, userName?: string): Report[] => {
+    return reports.filter(report => 
+      report.submitterId === submitterId || 
+      (userName && report.submittedBy === userName)
+    );
+  };
+
+  const getReportsByStatus = (status: ReportStatus): Report[] => {
+    return reports.filter(report => report.status === status);
+  };
+
+  const getStatistics = (): ReportStatistics => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const thisMonthReports = reports.filter(
+      report => new Date(report.date) >= startOfMonth
+    );
+    
+    const resolved = reports.filter(r => r.status === 'resolved').length;
+    const dismissed = reports.filter(r => r.status === 'dismissed').length;
+    const total = reports.length;
+    
+    return {
+      total,
+      newReports: reports.filter(r => r.status === 'new').length,
+      inProgress: reports.filter(r => 
+        r.status === 'reviewing' || r.status === 'pending' || r.status === 'escalated'
+      ).length,
+      resolved,
+      critical: reports.filter(r => r.severity === 'critical' && r.status !== 'resolved' && r.status !== 'dismissed').length,
+      thisMonth: thisMonthReports.length,
+      resolutionRate: total > 0 ? Math.round(((resolved + dismissed) / total) * 100) : 0,
+    };
+  };
+
+  return (
+    <ReportContext.Provider
+      value={{
+        reports,
+        addReport,
+        updateReportStatus,
+        assignReport,
+        addNote,
+        getReportsBySubmitter,
+        getReportsByStatus,
+        getStatistics,
+      }}
+    >
+      {children}
+    </ReportContext.Provider>
+  );
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useReports() {
+  const context = useContext(ReportContext);
+  if (context === undefined) {
+    throw new Error('useReports must be used within a ReportProvider');
+  }
+  return context;
+}

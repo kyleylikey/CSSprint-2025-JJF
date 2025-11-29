@@ -1,8 +1,45 @@
+import { useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useReports } from '../../context/ReportContext';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+
+const categoryLabels: Record<string, string> = {
+  harassment: 'Harassment',
+  discrimination: 'Discrimination',
+  fraud: 'Fraud / Financial Misconduct',
+  corruption: 'Corruption / Bribery',
+  safety: 'Health & Safety Violation',
+  conflict: 'Conflict of Interest',
+  data: 'Data Privacy Violation',
+  other: 'Other',
+};
 
 export default function ModeratorDashboard() {
   const { user } = useAuth();
+  const { reports, getStatistics } = useReports();
+  const navigate = useNavigate();
+  const stats = getStatistics();
+
+  // Get urgent reports (critical or high severity, not resolved/dismissed)
+  const urgentReports = reports.filter(r => 
+    (r.severity === 'critical' || r.severity === 'high') && 
+    r.status !== 'resolved' && 
+    r.status !== 'dismissed'
+  ).slice(0, 3);
+
+  // Get recent reports
+  const recentReports = reports.slice(0, 3);
+
+  // Calculate days since report
+  const getDaysAgo = useCallback((date: string) => {
+    const now = Date.now();
+    const diff = now - new Date(date).getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days} days ago`;
+  }, []);
 
   return (
     <div className="dashboard moderator-dashboard">
@@ -15,29 +52,29 @@ export default function ModeratorDashboard() {
         <div className="stat-card urgent">
           <div className="stat-icon">🚨</div>
           <div className="stat-content">
-            <h3>5</h3>
+            <h3>{stats.critical}</h3>
             <p>Urgent Cases</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">📥</div>
           <div className="stat-content">
-            <h3>12</h3>
+            <h3>{stats.newReports}</h3>
             <p>New Reports</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🔍</div>
           <div className="stat-content">
-            <h3>8</h3>
+            <h3>{stats.inProgress}</h3>
             <p>Under Review</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">✅</div>
           <div className="stat-content">
-            <h3>34</h3>
-            <p>Resolved This Month</p>
+            <h3>{stats.resolved}</h3>
+            <p>Resolved</p>
           </div>
         </div>
       </div>
@@ -46,30 +83,28 @@ export default function ModeratorDashboard() {
         <div className="content-section urgent-reports">
           <h2>⚠️ Urgent Reports Requiring Action</h2>
           <div className="urgent-list">
-            <div className="urgent-item">
-              <span className="priority-badge critical">CRITICAL</span>
-              <div className="urgent-content">
-                <h4>Financial fraud allegation in Accounting</h4>
-                <p>Submitted 2 hours ago • REP-1045</p>
+            {urgentReports.map(report => (
+              <div key={report.id} className="urgent-item">
+                <span className={`priority-badge ${report.severity}`}>
+                  {report.severity.toUpperCase()}
+                </span>
+                <div className="urgent-content">
+                  <h4>{report.title}</h4>
+                  <p>Submitted {getDaysAgo(report.date)} • {report.id}</p>
+                </div>
+                <button 
+                  className="btn-review"
+                  onClick={() => navigate('/moderator/reports')}
+                >
+                  Review Now
+                </button>
               </div>
-              <button className="btn-review">Review Now</button>
-            </div>
-            <div className="urgent-item">
-              <span className="priority-badge high">HIGH</span>
-              <div className="urgent-content">
-                <h4>Harassment complaint - immediate attention needed</h4>
-                <p>Submitted 5 hours ago • REP-1044</p>
+            ))}
+            {urgentReports.length === 0 && (
+              <div className="no-urgent">
+                <p>No urgent reports at this time</p>
               </div>
-              <button className="btn-review">Review Now</button>
-            </div>
-            <div className="urgent-item">
-              <span className="priority-badge high">HIGH</span>
-              <div className="urgent-content">
-                <h4>Data breach concern - IT Department</h4>
-                <p>Submitted 1 day ago • REP-1042</p>
-              </div>
-              <button className="btn-review">Review Now</button>
-            </div>
+            )}
           </div>
         </div>
 
@@ -77,20 +112,22 @@ export default function ModeratorDashboard() {
           <h2>📊 Quick Stats</h2>
           <div className="quick-stats">
             <div className="quick-stat-item">
-              <span className="stat-label">Avg. Resolution Time</span>
-              <span className="stat-value">3.2 days</span>
+              <span className="stat-label">Total Reports</span>
+              <span className="stat-value">{stats.total}</span>
             </div>
             <div className="quick-stat-item">
-              <span className="stat-label">Reports This Week</span>
-              <span className="stat-value">18</span>
+              <span className="stat-label">This Month</span>
+              <span className="stat-value">{stats.thisMonth}</span>
             </div>
             <div className="quick-stat-item">
               <span className="stat-label">Resolution Rate</span>
-              <span className="stat-value">94%</span>
+              <span className="stat-value">{stats.resolutionRate}%</span>
             </div>
             <div className="quick-stat-item">
               <span className="stat-label">Pending Escalations</span>
-              <span className="stat-value">3</span>
+              <span className="stat-value">
+                {reports.filter(r => r.status === 'escalated').length}
+              </span>
             </div>
           </div>
         </div>
@@ -111,27 +148,22 @@ export default function ModeratorDashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>REP-1043</td>
-                  <td>Conflict of Interest</td>
-                  <td><span className="status new">New</span></td>
-                  <td>Today</td>
-                  <td><button className="table-action">View</button></td>
-                </tr>
-                <tr>
-                  <td>REP-1041</td>
-                  <td>Discrimination</td>
-                  <td><span className="status reviewing">Reviewing</span></td>
-                  <td>Yesterday</td>
-                  <td><button className="table-action">View</button></td>
-                </tr>
-                <tr>
-                  <td>REP-1040</td>
-                  <td>Safety Violation</td>
-                  <td><span className="status pending">Pending</span></td>
-                  <td>2 days ago</td>
-                  <td><button className="table-action">View</button></td>
-                </tr>
+                {recentReports.map(report => (
+                  <tr key={report.id}>
+                    <td>{report.id}</td>
+                    <td>{categoryLabels[report.category] || report.category}</td>
+                    <td><span className={`status ${report.status}`}>{report.status}</span></td>
+                    <td>{getDaysAgo(report.date)}</td>
+                    <td>
+                      <button 
+                        className="table-action"
+                        onClick={() => navigate('/moderator/reports')}
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useReports } from '../../context/ReportContext';
+import type { ReportCategory, ReportSeverity } from '../../context/ReportContext';
 import './Report.css';
 
 export default function SubmitReport() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addReport } = useReports();
   const [formData, setFormData] = useState({
-    category: '',
-    severity: '',
+    category: '' as ReportCategory | '',
+    severity: '' as ReportSeverity | '',
     title: '',
     description: '',
     involvedParties: '',
@@ -29,8 +34,24 @@ export default function SubmitReport() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Generate reference number when submitted
-    setReferenceNumber(`#REP-${Math.floor(Math.random() * 900000 + 100000)}`);
+    
+    if (!formData.category || !formData.severity) return;
+    
+    const reportId = addReport({
+      title: formData.title,
+      description: formData.description,
+      category: formData.category as ReportCategory,
+      severity: formData.severity as ReportSeverity,
+      submittedBy: formData.anonymous ? 'Anonymous' : (user?.name || 'Unknown'),
+      submitterId: formData.anonymous ? `anon-${Date.now()}` : (user?.id || 'unknown'),
+      date: new Date().toISOString().split('T')[0],
+      incidentDate: formData.date || undefined,
+      anonymous: formData.anonymous,
+      involvedParties: formData.involvedParties || undefined,
+      evidence: formData.evidence || undefined,
+    });
+    
+    setReferenceNumber(`#${reportId}`);
     setSubmitted(true);
   };
 

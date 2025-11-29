@@ -289,6 +289,54 @@
   background: #e2e8f0;
 }
 
+.btn-add-note:disabled,
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notes-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.notes-section h3 {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+}
+
+.note-item {
+  background: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #3182ce;
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.note-header strong {
+  color: #2d3748;
+}
+
+.note-time {
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.note-item p {
+  color: #4a5568;
+  line-height: 1.5;
+  margin: 0;
+}
+
 .no-selection {
   display: flex;
   align-items: center;

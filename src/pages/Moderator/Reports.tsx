@@ -1,82 +1,62 @@
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useReports } from '../../context/ReportContext';
+import type { Report, ReportStatus } from '../../context/ReportContext';
 import './Reports.css';
 
-interface Report {
-  id: string;
-  title: string;
-  category: string;
-  status: 'new' | 'reviewing' | 'pending' | 'escalated' | 'resolved' | 'dismissed';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  submittedBy: string;
-  date: string;
-  anonymous: boolean;
-}
-
-const mockReports: Report[] = [
-  {
-    id: 'REP-1045',
-    title: 'Financial fraud allegation in Accounting Department',
-    category: 'Fraud / Financial Misconduct',
-    status: 'new',
-    severity: 'critical',
-    submittedBy: 'Anonymous',
-    date: '2024-01-16',
-    anonymous: true,
-  },
-  {
-    id: 'REP-1044',
-    title: 'Harassment complaint - immediate attention needed',
-    category: 'Harassment',
-    status: 'reviewing',
-    severity: 'high',
-    submittedBy: 'John Smith',
-    date: '2024-01-16',
-    anonymous: false,
-  },
-  {
-    id: 'REP-1043',
-    title: 'Conflict of interest in procurement process',
-    category: 'Conflict of Interest',
-    status: 'new',
-    severity: 'medium',
-    submittedBy: 'Anonymous',
-    date: '2024-01-15',
-    anonymous: true,
-  },
-  {
-    id: 'REP-1042',
-    title: 'Data breach concern - IT Department',
-    category: 'Data Privacy Violation',
-    status: 'escalated',
-    severity: 'high',
-    submittedBy: 'Sarah Johnson',
-    date: '2024-01-14',
-    anonymous: false,
-  },
-  {
-    id: 'REP-1041',
-    title: 'Discrimination in hiring practices',
-    category: 'Discrimination',
-    status: 'pending',
-    severity: 'medium',
-    submittedBy: 'Anonymous',
-    date: '2024-01-13',
-    anonymous: true,
-  },
-];
+const categoryLabels: Record<string, string> = {
+  harassment: 'Harassment',
+  discrimination: 'Discrimination',
+  fraud: 'Fraud / Financial Misconduct',
+  corruption: 'Corruption / Bribery',
+  safety: 'Health & Safety Violation',
+  conflict: 'Conflict of Interest',
+  data: 'Data Privacy Violation',
+  other: 'Other',
+};
 
 const statusOptions = ['all', 'new', 'reviewing', 'pending', 'escalated', 'resolved', 'dismissed'];
 const severityOptions = ['all', 'low', 'medium', 'high', 'critical'];
 
 export default function ReviewReports() {
+  const { user } = useAuth();
+  const { reports, updateReportStatus, assignReport, addNote } = useReports();
   const [filter, setFilter] = useState({ status: 'all', severity: 'all' });
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [noteText, setNoteText] = useState('');
 
-  const filteredReports = mockReports.filter(report => {
+  const filteredReports = reports.filter(report => {
     if (filter.status !== 'all' && report.status !== filter.status) return false;
     if (filter.severity !== 'all' && report.severity !== filter.severity) return false;
     return true;
   });
+
+  const handleAssignToSelf = () => {
+    if (selectedReport && user) {
+      assignReport(selectedReport.id, user.id);
+    }
+  };
+
+  const handleStatusChange = (status: ReportStatus) => {
+    if (selectedReport) {
+      updateReportStatus(selectedReport.id, status);
+    }
+  };
+
+  const handleAddNote = () => {
+    if (selectedReport && noteText.trim() && user) {
+      addNote(selectedReport.id, {
+        author: user.name,
+        content: noteText,
+      });
+      setNoteText('');
+    }
+  };
+
+  // Keep selected report in sync with reports state
+  const currentSelectedReport = selectedReport 
+    ? reports.find(r => r.id === selectedReport.id) || selectedReport
+    : null;
 
   return (
     <div className="review-reports">
@@ -109,7 +89,7 @@ export default function ReviewReports() {
           </select>
         </div>
         <div className="filter-results">
-          Showing {filteredReports.length} of {mockReports.length} reports
+          Showing {filteredReports.length} of {reports.length} reports
         </div>
       </div>
 
@@ -129,7 +109,7 @@ export default function ReviewReports() {
               </div>
               <h4 className="report-item-title">{report.title}</h4>
               <div className="report-item-meta">
-                <span>{report.category}</span>
+                <span>{categoryLabels[report.category] || report.category}</span>
                 <span className={`status-tag ${report.status}`}>{report.status}</span>
               </div>
             </div>
@@ -137,65 +117,133 @@ export default function ReviewReports() {
         </div>
 
         <div className="report-detail-panel">
-          {selectedReport ? (
+          {currentSelectedReport ? (
             <div className="report-detail">
               <div className="detail-header">
-                <h2>{selectedReport.title}</h2>
-                <span className={`severity-badge ${selectedReport.severity}`}>
-                  {selectedReport.severity.toUpperCase()}
+                <h2>{currentSelectedReport.title}</h2>
+                <span className={`severity-badge ${currentSelectedReport.severity}`}>
+                  {currentSelectedReport.severity.toUpperCase()}
                 </span>
               </div>
               
               <div className="detail-info">
                 <div className="info-row">
                   <span className="info-label">Report ID:</span>
-                  <span className="info-value">{selectedReport.id}</span>
+                  <span className="info-value">{currentSelectedReport.id}</span>
                 </div>
                 <div className="info-row">
                   <span className="info-label">Category:</span>
-                  <span className="info-value">{selectedReport.category}</span>
+                  <span className="info-value">{categoryLabels[currentSelectedReport.category] || currentSelectedReport.category}</span>
                 </div>
                 <div className="info-row">
                   <span className="info-label">Status:</span>
-                  <span className={`status-tag ${selectedReport.status}`}>
-                    {selectedReport.status}
+                  <span className={`status-tag ${currentSelectedReport.status}`}>
+                    {currentSelectedReport.status}
                   </span>
                 </div>
                 <div className="info-row">
                   <span className="info-label">Submitted By:</span>
                   <span className="info-value">
-                    {selectedReport.anonymous ? '🔒 Anonymous' : selectedReport.submittedBy}
+                    {currentSelectedReport.anonymous ? '🔒 Anonymous' : currentSelectedReport.submittedBy}
                   </span>
                 </div>
                 <div className="info-row">
                   <span className="info-label">Date:</span>
                   <span className="info-value">
-                    {new Date(selectedReport.date).toLocaleDateString()}
+                    {new Date(currentSelectedReport.date).toLocaleDateString()}
                   </span>
                 </div>
+                {currentSelectedReport.incidentDate && (
+                  <div className="info-row">
+                    <span className="info-label">Incident Date:</span>
+                    <span className="info-value">
+                      {new Date(currentSelectedReport.incidentDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+                {currentSelectedReport.involvedParties && (
+                  <div className="info-row">
+                    <span className="info-label">Involved Parties:</span>
+                    <span className="info-value">{currentSelectedReport.involvedParties}</span>
+                  </div>
+                )}
               </div>
 
               <div className="detail-description">
                 <h3>Description</h3>
-                <p>
-                  This is a placeholder for the detailed description of the report.
-                  In a real application, this would contain the full report content
-                  submitted by the employee, including any evidence or supporting
-                  documentation.
-                </p>
+                <p>{currentSelectedReport.description}</p>
               </div>
 
+              {currentSelectedReport.evidence && (
+                <div className="detail-description">
+                  <h3>Evidence</h3>
+                  <p>{currentSelectedReport.evidence}</p>
+                </div>
+              )}
+
               <div className="detail-actions">
-                <button className="btn-action primary">Assign to Self</button>
-                <button className="btn-action secondary">Escalate</button>
-                <button className="btn-action success">Mark Resolved</button>
-                <button className="btn-action danger">Dismiss</button>
+                <button 
+                  className="btn-action primary"
+                  onClick={handleAssignToSelf}
+                  disabled={currentSelectedReport.status === 'resolved' || currentSelectedReport.status === 'dismissed'}
+                >
+                  Assign to Self
+                </button>
+                <button 
+                  className="btn-action secondary"
+                  onClick={() => handleStatusChange('escalated')}
+                  disabled={currentSelectedReport.status === 'resolved' || currentSelectedReport.status === 'dismissed'}
+                >
+                  Escalate
+                </button>
+                <button 
+                  className="btn-action success"
+                  onClick={() => handleStatusChange('resolved')}
+                  disabled={currentSelectedReport.status === 'resolved' || currentSelectedReport.status === 'dismissed'}
+                >
+                  Mark Resolved
+                </button>
+                <button 
+                  className="btn-action danger"
+                  onClick={() => handleStatusChange('dismissed')}
+                  disabled={currentSelectedReport.status === 'resolved' || currentSelectedReport.status === 'dismissed'}
+                >
+                  Dismiss
+                </button>
               </div>
+
+              {currentSelectedReport.notes.length > 0 && (
+                <div className="notes-section">
+                  <h3>Investigation Notes</h3>
+                  {currentSelectedReport.notes.map(note => (
+                    <div key={note.id} className="note-item">
+                      <div className="note-header">
+                        <strong>{note.author}</strong>
+                        <span className="note-time">
+                          {new Date(note.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      <p>{note.content}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="add-note">
                 <h3>Add Note</h3>
-                <textarea placeholder="Add investigation notes..." rows={3} />
-                <button className="btn-add-note">Save Note</button>
+                <textarea 
+                  placeholder="Add investigation notes..." 
+                  rows={3}
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                />
+                <button 
+                  className="btn-add-note"
+                  onClick={handleAddNote}
+                  disabled={!noteText.trim()}
+                >
+                  Save Note
+                </button>
               </div>
             </div>
           ) : (

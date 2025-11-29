@@ -1,44 +1,25 @@
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useReports } from '../../context/ReportContext';
+import type { Report } from '../../context/ReportContext';
 import './MyReports.css';
 
-interface Report {
-  id: string;
-  title: string;
-  category: string;
-  status: 'pending' | 'reviewing' | 'resolved' | 'dismissed';
-  date: string;
-  severity: string;
-}
-
-const mockReports: Report[] = [
-  {
-    id: 'REP-1023',
-    title: 'Suspected expense fraud in Marketing Dept',
-    category: 'Fraud / Financial Misconduct',
-    status: 'reviewing',
-    date: '2024-01-15',
-    severity: 'high',
-  },
-  {
-    id: 'REP-1021',
-    title: 'Workplace harassment incident',
-    category: 'Harassment',
-    status: 'resolved',
-    date: '2024-01-10',
-    severity: 'medium',
-  },
-  {
-    id: 'REP-1020',
-    title: 'Safety protocol violation',
-    category: 'Health & Safety Violation',
-    status: 'pending',
-    date: '2024-01-08',
-    severity: 'low',
-  },
-];
+const categoryLabels: Record<string, string> = {
+  harassment: 'Harassment',
+  discrimination: 'Discrimination',
+  fraud: 'Fraud / Financial Misconduct',
+  corruption: 'Corruption / Bribery',
+  safety: 'Health & Safety Violation',
+  conflict: 'Conflict of Interest',
+  data: 'Data Privacy Violation',
+  other: 'Other',
+};
 
 const statusColors: Record<string, string> = {
+  new: '#805ad5',
   pending: '#ecc94b',
   reviewing: '#4299e1',
+  escalated: '#ed8936',
   resolved: '#48bb78',
   dismissed: '#a0aec0',
 };
@@ -51,6 +32,14 @@ const severityColors: Record<string, string> = {
 };
 
 export default function MyReports() {
+  const { user } = useAuth();
+  const { getReportsBySubmitter } = useReports();
+  
+  // Get reports for current user using consolidated function
+  const userReports: Report[] = user 
+    ? getReportsBySubmitter(user.id, user.name)
+    : [];
+
   return (
     <div className="my-reports">
       <div className="reports-header">
@@ -59,7 +48,7 @@ export default function MyReports() {
       </div>
 
       <div className="reports-list">
-        {mockReports.map(report => (
+        {userReports.map(report => (
           <div key={report.id} className="report-card">
             <div className="report-card-header">
               <span className="report-id">{report.id}</span>
@@ -75,7 +64,7 @@ export default function MyReports() {
             
             <div className="report-meta">
               <span className="meta-item">
-                📁 {report.category}
+                📁 {categoryLabels[report.category] || report.category}
               </span>
               <span className="meta-item">
                 📅 {new Date(report.date).toLocaleDateString()}
@@ -88,20 +77,25 @@ export default function MyReports() {
               </span>
             </div>
 
+            {report.anonymous && (
+              <div className="anonymous-badge">
+                🔒 Submitted Anonymously
+              </div>
+            )}
+
             <div className="report-actions">
               <button className="btn-view">View Details</button>
-              <button className="btn-update">Add Update</button>
             </div>
           </div>
         ))}
       </div>
 
-      {mockReports.length === 0 && (
+      {userReports.length === 0 && (
         <div className="no-reports">
           <p>You haven't submitted any reports yet.</p>
-          <a href="/employee/report" className="btn-primary">
+          <Link to="/employee/report" className="btn-primary">
             Submit Your First Report
-          </a>
+          </Link>
         </div>
       )}
     </div>

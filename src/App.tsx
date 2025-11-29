@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ReportProvider } from './context/ReportContext';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import EmployeeDashboard from './pages/Employee/Dashboard';
@@ -123,7 +124,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ReportProvider>
+          <AppRoutes />
+        </ReportProvider>
       </AuthProvider>
     </BrowserRouter>
   );

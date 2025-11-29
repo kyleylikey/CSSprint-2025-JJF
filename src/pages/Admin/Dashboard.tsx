@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useReports } from '../../context/ReportContext';
 import './Dashboard.css';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { getStatistics } = useReports();
+  const stats = getStatistics();
 
   return (
     <div className="dashboard admin-dashboard">
@@ -22,21 +26,21 @@ export default function AdminDashboard() {
         <div className="stat-card">
           <div className="stat-icon">📊</div>
           <div className="stat-content">
-            <h3>89</h3>
+            <h3>{stats.thisMonth}</h3>
             <p>Reports This Month</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">⚡</div>
           <div className="stat-content">
-            <h3>94%</h3>
+            <h3>{stats.resolutionRate}%</h3>
             <p>Resolution Rate</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🔒</div>
           <div className="stat-content">
-            <h3>12</h3>
+            <h3>{stats.inProgress}</h3>
             <p>Active Cases</p>
           </div>
         </div>
@@ -97,26 +101,26 @@ export default function AdminDashboard() {
         <div className="content-section">
           <h2>📋 Quick Actions</h2>
           <div className="admin-actions">
-            <a href="/admin/users" className="admin-action-card">
+            <Link to="/admin/users" className="admin-action-card">
               <span className="action-icon">👤</span>
               <h3>User Management</h3>
               <p>Add, edit, or remove users</p>
-            </a>
-            <a href="/admin/analytics" className="admin-action-card">
+            </Link>
+            <Link to="/admin/analytics" className="admin-action-card">
               <span className="action-icon">📊</span>
               <h3>Analytics</h3>
               <p>View detailed reports and trends</p>
-            </a>
-            <a href="/admin/settings" className="admin-action-card">
+            </Link>
+            <Link to="/admin/settings" className="admin-action-card">
               <span className="action-icon">⚙️</span>
               <h3>System Settings</h3>
               <p>Configure system parameters</p>
-            </a>
-            <a href="#" className="admin-action-card">
+            </Link>
+            <Link to="#" className="admin-action-card">
               <span className="action-icon">📧</span>
               <h3>Notifications</h3>
               <p>Manage email templates</p>
-            </a>
+            </Link>
           </div>
         </div>
 
