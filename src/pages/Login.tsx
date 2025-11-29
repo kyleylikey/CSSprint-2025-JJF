@@ -86,6 +86,15 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* Standalone Ledger App Button */}
+      <button 
+        className="ledger-app-btn"
+        onClick={() => navigate('/ledger')}
+        title="Open QuickBooks Lite"
+      >
+        💰 QuickBooks Lite
+      </button>
     </div>
   );
 }

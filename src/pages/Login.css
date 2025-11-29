@@ -124,3 +124,30 @@
     padding: 0.75rem;
   }
 }
+
+/* Standalone Ledger App Button */
+.ledger-app-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+  color: white;
+  border: none;
+  padding: 0.875rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.ledger-app-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+}
+
+.ledger-app-btn:active {
+  transform: translateY(-1px);
+}

@@ -7,7 +7,7 @@ import Login from './pages/Login';
 import EmployeeDashboard from './pages/Employee/Dashboard';
 import SubmitReport from './pages/Employee/Report';
 import MyReports from './pages/Employee/MyReports';
-import Ledger from './pages/Employee/Ledger';
+import LedgerApp from './pages/LedgerApp';
 import ModeratorDashboard from './pages/Moderator/Dashboard';
 import ReviewReports from './pages/Moderator/Reports';
 import ManageCases from './pages/Moderator/Cases';
@@ -73,11 +73,6 @@ function AppRoutes() {
               <MyReports />
             </ProtectedRoute>
           } />
-          <Route path="/employee/ledger" element={
-            <ProtectedRoute allowedRoles={['employee']}>
-              <Ledger />
-            </ProtectedRoute>
-          } />
 
           {/* Moderator Routes */}
           <Route path="/moderator/dashboard" element={
@@ -117,6 +112,9 @@ function AppRoutes() {
               <Settings />
             </ProtectedRoute>
           } />
+
+          {/* Standalone Ledger Application */}
+          <Route path="/ledger" element={<LedgerApp />} />
 
           {/* Default route */}
           <Route path="/" element={<Navigate to="/login" replace />} />
