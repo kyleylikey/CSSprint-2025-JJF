@@ -127,8 +127,8 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
       const originalValue = String(entry[field]);
       const newValue = String(value);
 
-      // Only report if the value actually changed and the entry was original
-      if (originalValue !== newValue && entry.isOriginal) {
+      // Report any value change to the moderator
+      if (originalValue !== newValue) {
         reportTamperToModerator(id, field, originalValue, newValue);
       }
 
@@ -150,7 +150,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   const deleteEntry = useCallback((id: string) => {
     setEntries(prev => {
       const entry = prev.find(e => e.id === id);
-      if (entry?.isOriginal && user) {
+      if (entry && user) {
         reportTamperToModerator(id, 'entry', JSON.stringify(entry), 'DELETED');
       }
       return prev.filter(e => e.id !== id);
