@@ -147,12 +147,14 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteEntry = useCallback((id: string) => {
-    const entry = entries.find(e => e.id === id);
-    if (entry?.isOriginal && user) {
-      reportTamperToModerator(id, 'entry', JSON.stringify(entry), 'DELETED');
-    }
-    setEntries(prev => prev.filter(e => e.id !== id));
-  }, [entries, user, reportTamperToModerator]);
+    setEntries(prev => {
+      const entry = prev.find(e => e.id === id);
+      if (entry?.isOriginal && user) {
+        reportTamperToModerator(id, 'entry', JSON.stringify(entry), 'DELETED');
+      }
+      return prev.filter(e => e.id !== id);
+    });
+  }, [user, reportTamperToModerator]);
 
   return (
     <LedgerContext.Provider

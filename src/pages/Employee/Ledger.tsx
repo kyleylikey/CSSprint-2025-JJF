@@ -30,10 +30,10 @@ export default function Ledger() {
 
   const handleSave = () => {
     if (editingId && editValues) {
-      if (editValues.date) updateEntry(editingId, 'date', editValues.date);
-      if (editValues.description) updateEntry(editingId, 'description', editValues.description);
+      if (editValues.date !== undefined) updateEntry(editingId, 'date', editValues.date);
+      if (editValues.description !== undefined) updateEntry(editingId, 'description', editValues.description);
       if (editValues.amount !== undefined) updateEntry(editingId, 'amount', editValues.amount);
-      if (editValues.category) updateEntry(editingId, 'category', editValues.category);
+      if (editValues.category !== undefined) updateEntry(editingId, 'category', editValues.category);
     }
     setEditingId(null);
     setEditValues({});
