@@ -4,11 +4,11 @@ import './Dashboard.css';
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
-  const { reports } = useReports();
+  const { getReportsBySubmitter } = useReports();
   
-  // Get user's reports
+  // Get user's reports using consolidated function
   const userReports = user 
-    ? reports.filter(r => r.submitterId === user.id || r.submittedBy === user.name)
+    ? getReportsBySubmitter(user.id, user.name)
     : [];
   
   const totalSubmitted = userReports.length;

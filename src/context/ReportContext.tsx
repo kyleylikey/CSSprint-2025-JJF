@@ -44,7 +44,7 @@ interface ReportContextType {
   updateReportStatus: (reportId: string, status: ReportStatus) => void;
   assignReport: (reportId: string, moderatorId: string) => void;
   addNote: (reportId: string, note: Omit<ReportNote, 'id' | 'timestamp'>) => void;
-  getReportsBySubmitter: (submitterId: string) => Report[];
+  getReportsBySubmitter: (submitterId: string, userName?: string) => Report[];
   getReportsByStatus: (status: ReportStatus) => Report[];
   getStatistics: () => ReportStatistics;
 }
@@ -201,8 +201,11 @@ export function ReportProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const getReportsBySubmitter = (submitterId: string): Report[] => {
-    return reports.filter(report => report.submitterId === submitterId);
+  const getReportsBySubmitter = (submitterId: string, userName?: string): Report[] => {
+    return reports.filter(report => 
+      report.submitterId === submitterId || 
+      (userName && report.submittedBy === userName)
+    );
   };
 
   const getReportsByStatus = (status: ReportStatus): Report[] => {

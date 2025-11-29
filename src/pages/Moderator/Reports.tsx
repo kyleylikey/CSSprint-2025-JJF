@@ -34,14 +34,12 @@ export default function ReviewReports() {
   const handleAssignToSelf = () => {
     if (selectedReport && user) {
       assignReport(selectedReport.id, user.id);
-      setSelectedReport({ ...selectedReport, status: 'reviewing', assignedTo: user.id });
     }
   };
 
   const handleStatusChange = (status: ReportStatus) => {
     if (selectedReport) {
       updateReportStatus(selectedReport.id, status);
-      setSelectedReport({ ...selectedReport, status });
     }
   };
 
@@ -52,11 +50,6 @@ export default function ReviewReports() {
         content: noteText,
       });
       setNoteText('');
-      // Update local selected report to show new note
-      const updatedReport = reports.find(r => r.id === selectedReport.id);
-      if (updatedReport) {
-        setSelectedReport(updatedReport);
-      }
     }
   };
 
