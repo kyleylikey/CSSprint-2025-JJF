@@ -95,12 +95,27 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.risk-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .report-item-id {
   font-family: monospace;
   font-size: 0.85rem;
   color: #718096;
+  flex: 1;
 }
 
 .severity-tag {
@@ -129,6 +144,8 @@
   align-items: center;
   font-size: 0.8rem;
   color: #718096;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .status-tag {
@@ -181,6 +198,92 @@
 .severity-badge.medium { background: #ecc94b; color: #744210; }
 .severity-badge.high { background: #ed8936; }
 .severity-badge.critical { background: #f56565; }
+
+/* AI Risk Analysis Section */
+.risk-analysis-section {
+  background: linear-gradient(135deg, #ebf8ff 0%, #f0fff4 100%);
+  border: 1px solid #bee3f8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.risk-analysis-section h3 {
+  margin: 0 0 1rem 0;
+  color: #2c5282;
+  font-size: 1.1rem;
+}
+
+.risk-overview {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.risk-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.risk-score-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.risk-score-text {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.risk-details {
+  flex: 1;
+}
+
+.risk-level,
+.risk-confidence,
+.risk-source {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.risk-factors {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.risk-factors h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.risk-factors ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.risk-factors li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #2d3748;
+}
+
+.factor-desc {
+  color: #718096;
+  font-weight: normal;
+}
 
 .detail-info {
   display: grid;
@@ -378,6 +481,11 @@
 
   .btn-action {
     width: 100%;
+    text-align: center;
+  }
+
+  .risk-overview {
+    flex-direction: column;
     text-align: center;
   }
 }

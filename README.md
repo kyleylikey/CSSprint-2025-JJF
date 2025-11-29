@@ -1,41 +1,43 @@
-# EthicsWatch - Corporate Integrity Monitoring System
+# JJF - Justifiable Judgment Flagging
 
 <p align="center">
-  <strong>🛡️ A practical, human-centered approach to promoting organizational integrity</strong>
+  <strong>⚖️ AI-Powered Risk Assessment for Corporate Integrity</strong>
 </p>
 
 <p align="center">
-  <em>"The best compliance systems don't replace human judgment—they empower it."</em>
+  <em>"Empowering human judgment with intelligent risk analysis"</em>
 </p>
 
 ---
 
 ## 🎯 The Problem
 
-Corporate misconduct costs organizations billions annually, but more importantly, it erodes trust, damages cultures, and harms individuals. While many solutions chase technological complexity, the fundamental challenge remains simple: **how do we encourage people to speak up about unethical behavior?**
+Corporate misconduct costs organizations billions annually, but more importantly, it erodes trust, damages cultures, and harms individuals. While many solutions chase technological complexity, the fundamental challenge remains: **how do we efficiently prioritize and assess the risk of reported concerns?**
 
-## 💡 Our Solution: EthicsWatch
+## 💡 Our Solution: JJF (Justifiable Judgment Flagging)
 
-EthicsWatch is a streamlined ethics reporting and monitoring platform that focuses on what matters most: **making it easy, safe, and effective for employees to report concerns**.
+JJF is an AI-enhanced ethics reporting and monitoring platform that combines the power of intelligent risk scoring with human oversight. Our system makes it easy for employees to report concerns while helping moderators efficiently prioritize and investigate cases.
 
-### Why Simple Wins
+### 🤖 AI-Powered Risk Scoring Algorithm
 
-Some competitors are building AI-powered sentiment analysis or blockchain-based immutable audit trails. While technically impressive, these approaches often:
+Our proprietary risk scoring algorithm evaluates each report based on multiple factors:
 
-- **Create barriers**: Complex systems discourage reporting
-- **Introduce risks**: AI can misinterpret context; blockchain immutability can expose whistleblowers
-- **Miss the point**: Technology can't replace trust and human judgment
-- **Increase costs**: Enterprise AI and blockchain require significant infrastructure
+| Factor | Description | Weight |
+|--------|-------------|--------|
+| **Source Type** | Employee reports weighted higher than automated flags | 1.5x for employee reports |
+| **Severity Level** | Critical/High severity increases risk score | 10-80 points |
+| **Sensitive Departments** | Finance, Executive, HR, Legal flagged higher | +15 points |
+| **Event Rarity** | Uncommon event types (corruption, fraud) weighted higher | 3-9 points |
+| **Corroboration** | Multiple related reports increase confidence | +5-20 points, +30% confidence |
 
-**EthicsWatch takes a different approach:**
+### Why AI + Human Judgment Wins
 
 | Feature | Our Approach | Why It Works |
 |---------|--------------|--------------|
-| **Reporting** | Simple, accessible web forms | Lower barrier = more reports |
-| **Anonymity** | Optional anonymous submission | Employees control their privacy |
-| **Transparency** | Clear status tracking | Builds trust in the process |
-| **Review** | Human moderators, not algorithms | Nuanced understanding of context |
-| **Security** | Role-based access control | Right information to right people |
+| **Risk Assessment** | AI-calculated risk scores | Objective, consistent prioritization |
+| **Source Weighting** | Employee reports > automated flags | Human insight valued higher |
+| **Confidence Scoring** | Algorithm provides confidence levels | Transparency in AI decisions |
+| **Final Decision** | Human moderators decide | Context and nuance preserved |
 
 ## ✨ Core Features
 
@@ -46,8 +48,10 @@ Some competitors are building AI-powered sentiment analysis or blockchain-based 
 - **📚 Ethics Resources**: Access to company policies and training materials
 
 ### For HR Moderators  
-- **📥 Centralized Dashboard**: All reports in one place
-- **⚡ Priority Flagging**: Critical issues surface immediately
+- **🤖 AI Risk Scores**: Every report automatically scored for risk level (0-100)
+- **📊 Contributing Factors**: Transparent breakdown of why AI assigned each score
+- **📥 Centralized Dashboard**: All reports sorted by AI-calculated priority
+- **⚡ Priority Flagging**: Critical issues with high risk scores surface immediately
 - **📋 Case Management**: Add notes, assign reviewers, track progress
 - **🔄 Workflow Actions**: Assign, escalate, resolve, or dismiss with one click
 
@@ -55,7 +59,11 @@ Some competitors are building AI-powered sentiment analysis or blockchain-based 
 - **📈 Real-time Analytics**: Track reporting trends and resolution rates
 - **👥 User Management**: Control access and permissions
 - **⚙️ System Settings**: Configure categories, notifications, and policies
-- **🏥 System Health**: Monitor platform status and performance
+
+### Automated Detection (QuickBooks Lite Demo)
+- **💰 Ledger Monitoring**: Simulated accounting software with tamper detection
+- **🚨 Automatic Flagging**: Modifications to ledger entries are automatically reported
+- **📉 Lower Weight**: Automated flags receive 0.7x weight vs employee reports
 
 ## 🚀 Quick Start
 
@@ -96,44 +104,64 @@ npm run preview
 - **Routing**: React Router v7
 - **Build Tool**: Vite
 - **Styling**: Modern CSS with responsive design
+- **AI Risk Scoring**: Custom algorithm in TypeScript
 
-## 📖 Why Not AI or Blockchain?
+## 📖 The JJF Risk Scoring Algorithm
 
-### The AI Argument
-"AI can analyze patterns and detect unethical behavior automatically!"
+### How It Works
 
-**Reality check:**
-- AI lacks context. A joke in an email might flag as harassment
-- False positives erode trust in the system
-- Employees may self-censor, reducing honest communication
-- Training data biases can create unfair outcomes
-- AI recommendations still require human review
+```typescript
+// Simplified algorithm overview
+RiskScore = BaseScore
+  + (SeverityWeight × SourceMultiplier)
+  + (SensitiveDepartmentBonus)
+  + (RarityScore × SourceMultiplier)
+  + (CorroborationBonus)
 
-### The Blockchain Argument  
-"Blockchain creates an immutable audit trail!"
+// Source Multiplier
+Employee Report: 1.0
+Automated Flag: 0.7
 
-**Reality check:**
-- Immutability is a liability for whistleblower protection
-- Regulatory compliance (GDPR, right to be forgotten) becomes impossible
-- Performance overhead for simple CRUD operations
-- Decentralization adds complexity without clear benefit
-- Traditional databases with proper access controls achieve the same goal
+// Result
+Score: 0-100
+Level: low | medium | high | critical
+Confidence: 0-100%
+```
 
-### Our Philosophy
-**Trust is built through transparency, not technology.** 
+### Risk Level Thresholds
 
-The most sophisticated AI can't replace a culture where employees feel safe speaking up. The most secure blockchain can't substitute for management that takes reports seriously.
+| Score | Level | Action |
+|-------|-------|--------|
+| 0-29 | Low | Routine review |
+| 30-49 | Medium | Timely investigation |
+| 50-69 | High | Urgent attention |
+| 70-100 | Critical | Immediate action |
 
-EthicsWatch provides the tools to facilitate this human process—nothing more, nothing less.
+### Why Employee Reports Are Weighted Higher
+
+1. **Context**: Employees understand workplace dynamics
+2. **Credibility**: Reporting takes courage and usually indicates genuine concern
+3. **Detail**: Human reports include nuanced observations
+4. **Accountability**: Named reporters have stake in accuracy
+
+### Why Automated Flags Are Still Valuable
+
+1. **Objectivity**: No personal bias in detection
+2. **Consistency**: Same rules applied every time
+3. **Speed**: Instant detection of anomalies
+4. **Coverage**: Can monitor systems 24/7
 
 ## 🔮 Roadmap
 
+- [x] AI-powered risk scoring algorithm
+- [x] Automated ledger tampering detection
+- [x] Risk factor transparency in moderator view
 - [ ] Email notifications for status updates
 - [ ] Integration with HR management systems
 - [ ] Mobile-responsive PWA
 - [ ] Multi-language support
 - [ ] Department-level analytics
-- [ ] Scheduled reporting exports
+- [ ] Machine learning model improvements
 
 ## 📜 License
 
@@ -143,5 +171,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <p align="center">
   <strong>Built for the 2025 CSS Hackathon</strong><br>
-  <em>Promoting integrity through simplicity</em>
+  <em>Team JJF - Justifiable Judgment Flagging</em><br>
+  <em>Combining AI intelligence with human wisdom</em>
 </p>

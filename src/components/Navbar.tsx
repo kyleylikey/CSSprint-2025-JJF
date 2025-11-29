@@ -18,7 +18,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/">🛡️ Ethics Monitor</Link>
+        <Link to="/">⚖️ JJF</Link>
       </div>
       
       <div className="navbar-links">

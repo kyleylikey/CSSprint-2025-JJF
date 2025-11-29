@@ -104,17 +104,18 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
 
     setTamperLogs(prev => [...prev, tamperLog]);
 
-    // Create a report for the moderator
+    // Create a report for the moderator (marked as automated flag)
     addReport({
       title: `Ledger Tampering Detected - Entry ${entryId}`,
       description: `User "${user.name}" (ID: ${user.id}) has modified the ledger entry ${entryId}.\n\nField Modified: ${field}\nOriginal Value: ${originalValue}\nNew Value: ${newValue}\nTimestamp: ${new Date().toLocaleString()}\n\nThis modification was automatically detected and reported for review.`,
       category: 'fraud',
       severity: 'high',
-      submittedBy: 'System - Tamper Detection',
+      submittedBy: 'JJF - Automated Detection',
       submitterId: 'system',
       date: new Date().toISOString().split('T')[0],
       anonymous: false,
       involvedParties: user.name,
+      isAutomatedFlag: true,
     });
   }, [user, addReport]);
 

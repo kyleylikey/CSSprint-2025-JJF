@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useReports } from '../../context/ReportContext';
+import { calculateRiskScore, getRiskLevelColor } from '../../context/RiskScoringAlgorithm';
 import type { Report, ReportStatus } from '../../context/ReportContext';
 import './Reports.css';
 
@@ -95,35 +96,86 @@ export default function ReviewReports() {
 
       <div className="reports-grid">
         <div className="reports-list-panel">
-          {filteredReports.map(report => (
-            <div
-              key={report.id}
-              className={`report-item ${selectedReport?.id === report.id ? 'selected' : ''}`}
-              onClick={() => setSelectedReport(report)}
-            >
-              <div className="report-item-header">
-                <span className="report-item-id">{report.id}</span>
-                <span className={`severity-tag ${report.severity}`}>
-                  {report.severity.toUpperCase()}
-                </span>
+          {filteredReports.map(report => {
+            const riskScore = calculateRiskScore(report, reports, report.isAutomatedFlag);
+            return (
+              <div
+                key={report.id}
+                className={`report-item ${selectedReport?.id === report.id ? 'selected' : ''}`}
+                onClick={() => setSelectedReport(report)}
+              >
+                <div className="report-item-header">
+                  <span 
+                    className="risk-indicator"
+                    style={{ backgroundColor: getRiskLevelColor(riskScore.level) }}
+                    title={`Risk Score: ${riskScore.score}`}
+                  >
+                    {riskScore.score}
+                  </span>
+                  <span className="report-item-id">{report.id}</span>
+                  <span className={`severity-tag ${report.severity}`}>
+                    {report.severity.toUpperCase()}
+                  </span>
+                </div>
+                <h4 className="report-item-title">{report.title}</h4>
+                <div className="report-item-meta">
+                  <span>{report.isAutomatedFlag ? '🤖 Auto' : '👤 Employee'}</span>
+                  <span>{categoryLabels[report.category] || report.category}</span>
+                  <span className={`status-tag ${report.status}`}>{report.status}</span>
+                </div>
               </div>
-              <h4 className="report-item-title">{report.title}</h4>
-              <div className="report-item-meta">
-                <span>{categoryLabels[report.category] || report.category}</span>
-                <span className={`status-tag ${report.status}`}>{report.status}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="report-detail-panel">
-          {currentSelectedReport ? (
+          {currentSelectedReport ? (() => {
+            const riskScore = calculateRiskScore(currentSelectedReport, reports, currentSelectedReport.isAutomatedFlag);
+            return (
             <div className="report-detail">
               <div className="detail-header">
                 <h2>{currentSelectedReport.title}</h2>
                 <span className={`severity-badge ${currentSelectedReport.severity}`}>
                   {currentSelectedReport.severity.toUpperCase()}
                 </span>
+              </div>
+
+              {/* AI Risk Analysis Section */}
+              <div className="risk-analysis-section">
+                <h3>🤖 JJF AI Risk Analysis</h3>
+                <div className="risk-overview">
+                  <div 
+                    className="risk-score-circle"
+                    style={{ backgroundColor: getRiskLevelColor(riskScore.level) }}
+                  >
+                    <span className="risk-score-number">{riskScore.score}</span>
+                    <span className="risk-score-text">Risk</span>
+                  </div>
+                  <div className="risk-details">
+                    <div className="risk-level">
+                      Level: <strong style={{ color: getRiskLevelColor(riskScore.level) }}>
+                        {riskScore.level.toUpperCase()}
+                      </strong>
+                    </div>
+                    <div className="risk-confidence">
+                      Confidence: <strong>{riskScore.confidence}%</strong>
+                    </div>
+                    <div className="risk-source">
+                      Source: {currentSelectedReport.isAutomatedFlag ? '🤖 Automated Detection' : '👤 Employee Report'}
+                    </div>
+                  </div>
+                </div>
+                <div className="risk-factors">
+                  <h4>Contributing Factors:</h4>
+                  <ul>
+                    {riskScore.factors.map((factor, idx) => (
+                      <li key={idx}>
+                        <strong>{factor.name}:</strong> +{factor.contribution.toFixed(1)} pts
+                        <span className="factor-desc"> - {factor.description}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
               
               <div className="detail-info">
@@ -246,7 +298,8 @@ export default function ReviewReports() {
                 </button>
               </div>
             </div>
-          ) : (
+            );
+          })() : (
             <div className="no-selection">
               <p>Select a report from the list to view details</p>
             </div>

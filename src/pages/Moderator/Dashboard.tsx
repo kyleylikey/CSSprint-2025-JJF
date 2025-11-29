@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useReports } from '../../context/ReportContext';
+import { calculateRiskScore, getRiskLevelColor } from '../../context/RiskScoringAlgorithm';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
@@ -81,25 +82,35 @@ export default function ModeratorDashboard() {
 
       <div className="dashboard-grid">
         <div className="content-section urgent-reports">
-          <h2>⚠️ Urgent Reports Requiring Action</h2>
+          <h2>⚠️ AI Risk Analysis - Urgent Reports</h2>
           <div className="urgent-list">
-            {urgentReports.map(report => (
-              <div key={report.id} className="urgent-item">
-                <span className={`priority-badge ${report.severity}`}>
-                  {report.severity.toUpperCase()}
-                </span>
-                <div className="urgent-content">
-                  <h4>{report.title}</h4>
-                  <p>Submitted {getDaysAgo(report.date)} • {report.id}</p>
+            {urgentReports.map(report => {
+              const riskScore = calculateRiskScore(report, reports, report.isAutomatedFlag);
+              return (
+                <div key={report.id} className="urgent-item">
+                  <div className="risk-score-badge" style={{ backgroundColor: getRiskLevelColor(riskScore.level) }}>
+                    <span className="risk-score-value">{riskScore.score}</span>
+                    <span className="risk-score-label">Risk</span>
+                  </div>
+                  <span className={`priority-badge ${report.severity}`}>
+                    {report.severity.toUpperCase()}
+                  </span>
+                  <div className="urgent-content">
+                    <h4>{report.title}</h4>
+                    <p>
+                      {report.isAutomatedFlag ? '🤖 Auto-detected' : '👤 Employee report'} • 
+                      Submitted {getDaysAgo(report.date)} • {report.id}
+                    </p>
+                  </div>
+                  <button 
+                    className="btn-review"
+                    onClick={() => navigate('/moderator/reports')}
+                  >
+                    Review Now
+                  </button>
                 </div>
-                <button 
-                  className="btn-review"
-                  onClick={() => navigate('/moderator/reports')}
-                >
-                  Review Now
-                </button>
-              </div>
-            ))}
+              );
+            })}
             {urgentReports.length === 0 && (
               <div className="no-urgent">
                 <p>No urgent reports at this time</p>
@@ -135,12 +146,14 @@ export default function ModeratorDashboard() {
 
       <div className="dashboard-content">
         <div className="content-section">
-          <h2>📋 Recent Reports</h2>
+          <h2>📋 Recent Reports with AI Risk Scores</h2>
           <div className="reports-table">
             <table>
               <thead>
                 <tr>
+                  <th>Risk</th>
                   <th>ID</th>
+                  <th>Source</th>
                   <th>Category</th>
                   <th>Status</th>
                   <th>Date</th>
@@ -148,22 +161,34 @@ export default function ModeratorDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {recentReports.map(report => (
-                  <tr key={report.id}>
-                    <td>{report.id}</td>
-                    <td>{categoryLabels[report.category] || report.category}</td>
-                    <td><span className={`status ${report.status}`}>{report.status}</span></td>
-                    <td>{getDaysAgo(report.date)}</td>
-                    <td>
-                      <button 
-                        className="table-action"
-                        onClick={() => navigate('/moderator/reports')}
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {recentReports.map(report => {
+                  const riskScore = calculateRiskScore(report, reports, report.isAutomatedFlag);
+                  return (
+                    <tr key={report.id}>
+                      <td>
+                        <span 
+                          className="risk-badge"
+                          style={{ backgroundColor: getRiskLevelColor(riskScore.level) }}
+                        >
+                          {riskScore.score}
+                        </span>
+                      </td>
+                      <td>{report.id}</td>
+                      <td>{report.isAutomatedFlag ? '🤖' : '👤'}</td>
+                      <td>{categoryLabels[report.category] || report.category}</td>
+                      <td><span className={`status ${report.status}`}>{report.status}</span></td>
+                      <td>{getDaysAgo(report.date)}</td>
+                      <td>
+                        <button 
+                          className="table-action"
+                          onClick={() => navigate('/moderator/reports')}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -32,7 +32,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>🛡️ Ethics Monitor</h1>
+          <h1>⚖️ Justifiable Judgment Flagging</h1>
           <p>Corporate Integrity Platform</p>
         </div>
         
